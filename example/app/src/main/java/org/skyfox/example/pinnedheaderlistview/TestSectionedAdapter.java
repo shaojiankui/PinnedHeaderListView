@@ -8,6 +8,7 @@ import android.widget.AbsListView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import org.skyfox.pinnedheaderlistview.IndexPath;
 import org.skyfox.pinnedheaderlistview.SectionedBaseAdapter;
 
 import java.util.ArrayList;
@@ -61,13 +62,13 @@ public class TestSectionedAdapter extends SectionedBaseAdapter {
     }
 
     @Override
-    public Object getItem(int section, int position) {
+    public Object getItem(IndexPath indexPath) {
         // TODO Auto-generated method stub
         return null;
     }
 
     @Override
-    public long getItemId(int section, int position) {
+    public long getItemId(IndexPath indexPath) {
         // TODO Auto-generated method stub
         return 0;
     }
@@ -87,7 +88,7 @@ public class TestSectionedAdapter extends SectionedBaseAdapter {
     }
 
     @Override
-    public View getItemView(int section, int position, View convertView, ViewGroup parent) {
+    public View getItemView(IndexPath indexPath, View convertView, ViewGroup parent) {
         LinearLayout layout = null;
         if (convertView == null) {
 //            LayoutInflater inflator = (LayoutInflater) parent.getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
@@ -98,10 +99,10 @@ public class TestSectionedAdapter extends SectionedBaseAdapter {
             layout = (LinearLayout) convertView;
         }
         Object[] keys = linkedHashMap.keySet().toArray();
-        String key = (String) keys[section];
+        String key = (String) keys[indexPath.section];
         ArrayList arrayList = (ArrayList) linkedHashMap.get(key);
 
-        Contact contact = (Contact) arrayList.get(position);
+        Contact contact = (Contact) arrayList.get(indexPath.row);
 
         ((TextView) layout.findViewById(R.id.textItem)).setText(contact.name);
         return layout;

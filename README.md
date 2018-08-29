@@ -8,6 +8,8 @@ continue PinnedHeaderListView(A ListView with pinned section headers for Android
  * 修复有header和footer的时候index错乱问题。
  * 增加长按事件
  * 带侧边索引的通讯录Demo
+ * 引入IndexPath概念
+
  
 ## Demo ##
 ![](https://raw.githubusercontent.com/shaojiankui/PinnedHeaderListView/master/demo.gif)

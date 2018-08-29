@@ -5,6 +5,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 
+import org.skyfox.pinnedheaderlistview.IndexPath;
 import org.skyfox.pinnedheaderlistview.PinnedHeaderListView;
 
 import android.app.Activity;
@@ -61,11 +62,11 @@ public class MainActivity extends Activity {
 
         listView.setOnItemClickListener(new PinnedHeaderListView.OnItemClickListener() {
             @Override
-            public void onItemClick(AdapterView<?> adapterView, View view, int section, int position, long id) {
+            public void onItemClick(AdapterView<?> adapterView, View view, IndexPath indexPath, long id) {
                 Object[] keys = sectionedAdapter.linkedHashMap.keySet().toArray();
-                String key = (String) keys[section];
+                String key = (String) keys[indexPath.section];
                 ArrayList arrayList = (ArrayList) sectionedAdapter.linkedHashMap.get(key);
-                Contact contact = (Contact) arrayList.get(position);
+                Contact contact = (Contact) arrayList.get(indexPath.row);
                 Toast.makeText(MainActivity.this, contact.name, Toast.LENGTH_SHORT).show();
             }
 
@@ -78,11 +79,11 @@ public class MainActivity extends Activity {
 
         listView.setOnItemLongClickListener(new PinnedHeaderListView.OnItemLongClickListener() {
             @Override
-            public boolean onItemLongClick(AdapterView<?> adapterView, View view, int section, int position, long id) {
+            public boolean onItemLongClick(AdapterView<?> adapterView, View view, IndexPath indexPath, long id) {
                 Object[] keys = sectionedAdapter.linkedHashMap.keySet().toArray();
-                String key = (String) keys[section];
+                String key = (String) keys[indexPath.section];
                 final ArrayList arrayList = (ArrayList) sectionedAdapter.linkedHashMap.get(key);
-                final Contact contact = (Contact) arrayList.get(position);
+                final Contact contact = (Contact) arrayList.get(indexPath.row);
 
 
                 AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
@@ -109,15 +110,13 @@ public class MainActivity extends Activity {
 
                 AlertDialog dialog = builder.create();
                 dialog.show();
-
                 return true;
             }
 
             @Override
             public boolean onSectionLongClick(AdapterView<?> adapterView, View view, int section, long id) {
-                return true;
+                return false;
             }
-
         });
 
         addressbook_right = (AssortView) findViewById(R.id.addressbook_right);

@@ -3,19 +3,29 @@ package org.skyfox.pinnedheaderlistview;
 import android.content.Context;
 import android.graphics.Canvas;
 import android.util.AttributeSet;
+import android.util.SparseBooleanArray;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.*;
+import android.widget.AbsListView;
 import android.widget.AbsListView.OnScrollListener;
+import android.widget.AdapterView;
+import android.widget.HeaderViewListAdapter;
+import android.widget.ListAdapter;
+import android.widget.ListView;
+
+import org.skyfox.pinnedheaderlistview.IndexPath;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class PinnedHeaderListView extends ListView implements OnScrollListener {
 
     private OnScrollListener mOnScrollListener;
 
     public static interface PinnedSectionedHeaderAdapter {
-        public boolean isSectionHeader(int position);
+        public boolean isSectionHeader(int rawPosition);
 
-        public int getSectionForPosition(int position);
+        public IndexPath getIndexPathFowRawPosition(int rawPosition);
 
         public View getSectionHeaderView(int section, View convertView, ViewGroup parent);
 
@@ -80,7 +90,7 @@ public class PinnedHeaderListView extends ListView implements OnScrollListener {
 
         firstVisibleItem -= getHeaderViewsCount();
 
-        int section = mAdapter.getSectionForPosition(firstVisibleItem);
+        int section = mAdapter.getIndexPathFowRawPosition(firstVisibleItem).section;
         int viewType = mAdapter.getSectionHeaderViewType(section);
         mCurrentHeader = getSectionHeaderView(section, mCurrentHeaderViewType != viewType ? null : mCurrentHeader);
         ensurePinnedHeaderLayout(mCurrentHeader);
@@ -169,7 +179,7 @@ public class PinnedHeaderListView extends ListView implements OnScrollListener {
     }
 
     public static abstract class OnItemClickListener implements AdapterView.OnItemClickListener {
-        public abstract void onItemClick(AdapterView<?> adapterView, View view, int section, int position, long id);
+        public abstract void onItemClick(AdapterView<?> adapterView, View view, IndexPath indexPath, long id);
 
         public abstract void onSectionClick(AdapterView<?> adapterView, View view, int section, long id);
 
@@ -193,13 +203,12 @@ public class PinnedHeaderListView extends ListView implements OnScrollListener {
                 rawPosition = rawPosition - getHeaderViewsCount();
                 if (rawPosition < 0 || rawPosition >= adapter.getCount())//if have headerViews or FooterViews They didn't click event
                     return;
-                int section = adapter.getSectionForPosition(rawPosition);
-                int position = adapter.getPositionInSectionForPosition(rawPosition);
+                IndexPath indexPath = adapter.getIndexPathFowRawPosition(rawPosition);
 
-                if (position == -1) {
-                    listener.onSectionClick(adapterView, view, section, id);
+                if (indexPath.row == -1) {
+                    listener.onSectionClick(adapterView, view, indexPath.section, id);
                 } else {
-                    listener.onItemClick(adapterView, view, section, position, id);
+                    listener.onItemClick(adapterView, view, indexPath, id);
                 }
             }
         });
@@ -208,7 +217,7 @@ public class PinnedHeaderListView extends ListView implements OnScrollListener {
     }
 
     public static abstract class OnItemLongClickListener implements AdapterView.OnItemLongClickListener {
-        public abstract boolean onItemLongClick(AdapterView<?> adapterView, View view, int section, int position, long id);
+        public abstract boolean onItemLongClick(AdapterView<?> adapterView, View view,IndexPath indexPath, long id);
 
         public abstract boolean onSectionLongClick(AdapterView<?> adapterView, View view, int section, long id);
 
@@ -234,13 +243,13 @@ public class PinnedHeaderListView extends ListView implements OnScrollListener {
                 rawPosition = rawPosition - getHeaderViewsCount();
                 if (rawPosition < 0 || rawPosition >= adapter.getCount())//if have headerViews or FooterViews They didn't click event
                     return false;
-                int section = adapter.getSectionForPosition(rawPosition);
-                int position = adapter.getPositionInSectionForPosition(rawPosition);
+                IndexPath indexPath = adapter.getIndexPathFowRawPosition(rawPosition);
 
-                if (position == -1) {
-                    return listener.onSectionLongClick(adapterView, view, section, id);
+
+                if (indexPath.row == -1) {
+                    return listener.onSectionLongClick(adapterView, view, indexPath.section, id);
                 } else {
-                    return listener.onItemLongClick(adapterView, view, section, position, id);
+                    return listener.onItemLongClick(adapterView, view, indexPath, id);
                 }
             }
         });
@@ -252,11 +261,33 @@ public class PinnedHeaderListView extends ListView implements OnScrollListener {
         super.setSelection(position);
     }
 
-    //根据section  position 获取原始listview position
-    public void setSelection(int section, int position) {
+    //根据section  row 获取原始listview position
+    public void setSelection(int section, int row) {
+        setSelectionIndexPath(new IndexPath(section, row,-1));
+    }
+    //根据IndexPath获取原始listview position
+    public void setSelectionIndexPath(IndexPath indexPath) {
         SectionedBaseAdapter adapter = (SectionedBaseAdapter) mAdapter;
 
-        int originalosition = adapter.getOriginalPosition(section, position) + getHeaderViewsCount();
+        int originalosition = adapter.getOriginalPosition(indexPath) + getHeaderViewsCount();
         super.setSelection(originalosition);
+    }
+
+    public List<IndexPath> getCheckedIndexPaths() {
+        SparseBooleanArray checkedItemPositions = super.getCheckedItemPositions();
+
+        List<IndexPath>  list = new ArrayList<>();
+
+        for (int i=0;i<checkedItemPositions.size();i++){
+            int rawPosition = checkedItemPositions.keyAt(i);
+            boolean value = checkedItemPositions.valueAt(i);
+            if (value) {
+                IndexPath indexPath = mAdapter.getIndexPathFowRawPosition(rawPosition);
+                if(indexPath !=null && indexPath.row>=0 && indexPath.section>=0){
+                    list.add(indexPath);
+                }
+            }
+        }
+        return list ;
     }
 }
