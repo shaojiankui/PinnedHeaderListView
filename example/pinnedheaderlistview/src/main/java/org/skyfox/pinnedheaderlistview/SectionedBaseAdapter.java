@@ -5,6 +5,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 
+
+
 public abstract class SectionedBaseAdapter extends BaseAdapter implements PinnedHeaderListView.PinnedSectionedHeaderAdapter {
 
     private static int HEADER_VIEW_TYPE = 0;
@@ -144,7 +146,17 @@ public abstract class SectionedBaseAdapter extends BaseAdapter implements Pinned
         }
         return 0;
     }
-
+    //根据section  position 获取原始listview position
+    public int getOriginalPosition(int section,int position) {
+        int indeTotal = 0;
+        for (int i =0;i<section;i++){
+            int indexCount =  mSectionCountCache.get(i);
+            indeTotal += indexCount;
+            indeTotal++;
+        }
+        indeTotal += position;
+        return indeTotal;
+    }
     public final boolean isSectionHeader(int position) {
         int sectionStart = 0;
         for (int i = 0; i < internalGetSectionCount(); i++) {

@@ -127,7 +127,7 @@ public class PinnedHeaderListView extends ListView implements OnScrollListener {
     private void ensurePinnedHeaderLayout(View header) {
         if (header.isLayoutRequested()) {
             int widthSpec = MeasureSpec.makeMeasureSpec(getMeasuredWidth(), mWidthMode);
-            
+
             int heightSpec;
             ViewGroup.LayoutParams layoutParams = header.getLayoutParams();
             if (layoutParams != null && layoutParams.height > 0) {
@@ -168,33 +168,95 @@ public class PinnedHeaderListView extends ListView implements OnScrollListener {
         mHeightMode = MeasureSpec.getMode(heightMeasureSpec);
     }
 
-    public void setOnItemClickListener(OnItemClickListener listener) {
-        super.setOnItemClickListener(listener);
-    }
-
     public static abstract class OnItemClickListener implements AdapterView.OnItemClickListener {
-        @Override
-        public void onItemClick(AdapterView<?> adapterView, View view, int rawPosition, long id) {
-            SectionedBaseAdapter adapter;
-            if (adapterView.getAdapter().getClass().equals(HeaderViewListAdapter.class)) {
-                HeaderViewListAdapter wrapperAdapter = (HeaderViewListAdapter) adapterView.getAdapter();
-                adapter = (SectionedBaseAdapter) wrapperAdapter.getWrappedAdapter();
-            } else {
-                adapter = (SectionedBaseAdapter) adapterView.getAdapter();
-            }
-            int section = adapter.getSectionForPosition(rawPosition);
-            int position = adapter.getPositionInSectionForPosition(rawPosition);
-
-            if (position == -1) {
-                onSectionClick(adapterView, view, section, id);
-            } else {
-                onItemClick(adapterView, view, section, position, id);
-            }
-        }
-
         public abstract void onItemClick(AdapterView<?> adapterView, View view, int section, int position, long id);
 
         public abstract void onSectionClick(AdapterView<?> adapterView, View view, int section, long id);
 
+        public void onItemClick(AdapterView<?> adapterView, View view, int rawPosition, long id) {
+
+        }
+    }
+
+    public void setOnItemClickListener(final PinnedHeaderListView.OnItemClickListener listener) {
+        super.setOnItemClickListener(new android.widget.ListView.OnItemClickListener() {
+
+            @Override
+            public void onItemClick(AdapterView<?> adapterView, View view, int rawPosition, long id) {
+                SectionedBaseAdapter adapter;
+                if (adapterView.getAdapter().getClass().equals(HeaderViewListAdapter.class)) {
+                    HeaderViewListAdapter wrapperAdapter = (HeaderViewListAdapter) adapterView.getAdapter();
+                    adapter = (SectionedBaseAdapter) wrapperAdapter.getWrappedAdapter();
+                } else {
+                    adapter = (SectionedBaseAdapter) adapterView.getAdapter();
+                }
+                rawPosition = rawPosition - getHeaderViewsCount();
+                if (rawPosition < 0 || rawPosition >= adapter.getCount())//if have headerViews or FooterViews They didn't click event
+                    return;
+                int section = adapter.getSectionForPosition(rawPosition);
+                int position = adapter.getPositionInSectionForPosition(rawPosition);
+
+                if (position == -1) {
+                    listener.onSectionClick(adapterView, view, section, id);
+                } else {
+                    listener.onItemClick(adapterView, view, section, position, id);
+                }
+            }
+        });
+
+
+    }
+
+    public static abstract class OnItemLongClickListener implements AdapterView.OnItemLongClickListener {
+        public abstract boolean onItemLongClick(AdapterView<?> adapterView, View view, int section, int position, long id);
+
+        public abstract boolean onSectionLongClick(AdapterView<?> adapterView, View view, int section, long id);
+
+        public boolean onItemLongClick(AdapterView<?> adapterView, View view, int rawPosition, long id) {
+            return false;
+        }
+    }
+
+
+    public void setOnItemLongClickListener(final PinnedHeaderListView.OnItemLongClickListener listener) {
+        super.setOnItemLongClickListener(new android.widget.ListView.OnItemLongClickListener() {
+
+
+            @Override
+            public boolean onItemLongClick(AdapterView<?> adapterView, View view, int rawPosition, long id) {
+                SectionedBaseAdapter adapter;
+                if (adapterView.getAdapter().getClass().equals(HeaderViewListAdapter.class)) {
+                    HeaderViewListAdapter wrapperAdapter = (HeaderViewListAdapter) adapterView.getAdapter();
+                    adapter = (SectionedBaseAdapter) wrapperAdapter.getWrappedAdapter();
+                } else {
+                    adapter = (SectionedBaseAdapter) adapterView.getAdapter();
+                }
+                rawPosition = rawPosition - getHeaderViewsCount();
+                if (rawPosition < 0 || rawPosition >= adapter.getCount())//if have headerViews or FooterViews They didn't click event
+                    return false;
+                int section = adapter.getSectionForPosition(rawPosition);
+                int position = adapter.getPositionInSectionForPosition(rawPosition);
+
+                if (position == -1) {
+                    return listener.onSectionLongClick(adapterView, view, section, id);
+                } else {
+                    return listener.onItemLongClick(adapterView, view, section, position, id);
+                }
+            }
+        });
+
+    }
+
+    @Override
+    public void setSelection(int position) {
+        super.setSelection(position);
+    }
+
+    //根据section  position 获取原始listview position
+    public void setSelection(int section, int position) {
+        SectionedBaseAdapter adapter = (SectionedBaseAdapter) mAdapter;
+
+        int originalosition = adapter.getOriginalPosition(section, position) + getHeaderViewsCount();
+        super.setSelection(originalosition);
     }
 }

@@ -1,7 +1,18 @@
 PinnedHeaderListView
 ================
+继续维护PinnedHeaderListView，修改bug和增强功能。
 continue PinnedHeaderListView(A ListView with pinned section headers for Android)，fix bug and enhance
 
+## 新特性 new fetures ##
+ * 增加根据section选中```public void setSelection(int section, int position)```
+ * 修复有header和footer的时候index错乱问题。
+ * 增加长按事件
+ * 带侧边索引的通讯录Demo
+ 
+## Demo ##
+![](https://raw.githubusercontent.com/shaojiankui/PinnedHeaderListView/master/demo.gif)
+
+## JimiSmith‘s  ##
 This library provides a sectioned ListView with pinned headers. It looks and feels much like the default contacts app does on Android 4.0 and above
 
 A custom adapter is provided which must be extended and used with the custom ListView.
