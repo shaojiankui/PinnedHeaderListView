@@ -23,11 +23,11 @@ The usage of this library is simple. You need to create an adapter that extends 
 
 There are 6 methods that need to be overridden:
 
-* ```public Object getItem(int section, int position);```
-* ```public long getItemId(int section, int position);```
+* ```public Object getItem(IndexPath indexPath);```
+* ```public long getItemId(IndexPath indexPath);```
 * ```public int getSectionCount();```
 * ```public int getCountForSection(int section);```
-* ```public View getItemView(int section, int position, View convertView, ViewGroup parent);```
+* ```public View getItemView(IndexPath indexPath, View convertView, ViewGroup parent);```
 * ```public View getSectionHeaderView(int section, View convertView, ViewGroup parent);```
 
 ```getItemView``` and ```getSectionHeaderView``` should be treated as you would the ```getItemView``` method from a normal Adapter.
@@ -38,7 +38,7 @@ You should return the number of sections in your list in ```getSectionCount``` a
 
 In addition to these methods, there are a few others you may override:
 
-* ```public int getItemViewType(int section, int position);```
+* ```public int getItemViewType(IndexPath indexPath);```
 * ```public int getItemViewTypeCount();```
 * ```public int getSectionHeaderViewType(int section);```
 * ```public int getSectionHeaderViewTypeCount();```
@@ -46,7 +46,7 @@ In addition to these methods, there are a few others you may override:
 These replace the ```getViewTypeCount() and getItemViewType(int position)``` methods from a standard adapter
 
 Note that you can return the same ItemViewType for a header and a non header and these will be cached seperately by the underlying ListView.  
-That is, you will never get a header view passed in as the convertView in ```public View getItemView(int section, int position, View convertView, ViewGroup parent);```,
+That is, you will never get a header view passed in as the convertView in ```public View getItemView(IndexPath indexPath, View convertView, ViewGroup parent);```,
 nor will you get an item view passed in as the convertView in ```public View getSectionHeaderView(int section, View convertView, ViewGroup parent);```
 
 See the provided example for more details.

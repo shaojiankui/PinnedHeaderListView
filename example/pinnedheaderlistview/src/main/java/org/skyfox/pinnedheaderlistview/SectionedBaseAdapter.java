@@ -103,7 +103,7 @@ public abstract class SectionedBaseAdapter extends BaseAdapter implements Pinned
         if (isSectionHeader(rawPosition)) {
             return getItemViewTypeCount() + getSectionHeaderViewType(getIndexPathFowRawPosition(rawPosition).section);
         }
-        return getItemViewType(getIndexPathFowRawPosition(rawPosition).section,getIndexPathFowRawPosition(rawPosition).row);
+        return getItemViewType(getIndexPathFowRawPosition(rawPosition));
     }
 
     @Override
@@ -153,7 +153,7 @@ public abstract class SectionedBaseAdapter extends BaseAdapter implements Pinned
         return false;
     }
 
-    public int getItemViewType(int section, int row) {
+    public int getItemViewType(IndexPath indexPath) {
         return ITEM_VIEW_TYPE;
     }
 
