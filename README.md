@@ -14,6 +14,29 @@ continue PinnedHeaderListView(A ListView with pinned section headers for Android
 ## Demo ##
 ![](https://raw.githubusercontent.com/shaojiankui/PinnedHeaderListView/master/demo.gif)
 
+## Download ##
+
+    allprojects {
+    repositories {
+        jcenter()
+        maven {url 'https://dl.bintray.com/skyfox/maven'}
+    }
+    }
+
+
+Gradle 
+
+    compile 'org.skyfox:pinnedheaderlistview:1.0
+
+Maven
+
+    <dependency> 
+	<groupId>org.skyfox</groupId> 
+	<artifactId>pinnedheaderlistview</artifactId> 
+	<version>1.0</version> 
+	<type>pom</type> 
+</dependency>
+
 ## JimiSmith‘s  ##
 This library provides a sectioned ListView with pinned headers. It looks and feels much like the default contacts app does on Android 4.0 and above
 
