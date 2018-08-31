@@ -4,11 +4,16 @@ PinnedHeaderListView
 continue PinnedHeaderListView(A ListView with pinned section headers for Android)，fix bug and enhance
 
 ## 新特性 new fetures ##
- * 增加根据section选中```public void setSelection(int section, int position)```
- * 修复有header和footer的时候index错乱问题。
+ * 增加根据section/indexPath选中
+ ```public void setSelection(int section, int row), 
+    public void setSelectionIndexPath(IndexPath indexPath) ```
+ * 修复有header和footer的时候row错乱问题。
  * 增加长按事件
  * 带侧边索引的通讯录Demo
  * 引入IndexPath概念
+ * 获取多选后的IndexPath
+ ```listView.setChoiceMode(listView.CHOICE_MODE_MULTIPLE);
+    List<IndexPath> checkedItemIndexPaths = listView.getCheckedIndexPaths();```
 
  
 ## Demo ##
@@ -19,8 +24,8 @@ continue PinnedHeaderListView(A ListView with pinned section headers for Android
     allprojects {
     repositories {
         jcenter()
-        maven {url 'https://dl.bintray.com/skyfox/maven'}
-    }
+        //maven {url 'https://dl.bintray.com/skyfox/maven'}
+        }
     }
 
 
@@ -31,10 +36,10 @@ Gradle
 Maven
 
     <dependency> 
-	<groupId>org.skyfox</groupId> 
-	<artifactId>pinnedheaderlistview</artifactId> 
-	<version>1.0</version> 
-	<type>pom</type> 
+  <groupId>org.skyfox</groupId> 
+  <artifactId>pinnedheaderlistview</artifactId> 
+  <version>1.0</version> 
+  <type>pom</type> 
 </dependency>
 
 ## JimiSmith‘s  ##

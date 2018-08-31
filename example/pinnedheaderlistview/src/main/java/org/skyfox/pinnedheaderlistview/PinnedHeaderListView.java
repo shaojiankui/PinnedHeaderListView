@@ -217,7 +217,7 @@ public class PinnedHeaderListView extends ListView implements OnScrollListener {
     }
 
     public static abstract class OnItemLongClickListener implements AdapterView.OnItemLongClickListener {
-        public abstract boolean onItemLongClick(AdapterView<?> adapterView, View view,IndexPath indexPath, long id);
+        public abstract boolean onItemLongClick(AdapterView<?> adapterView, View view, IndexPath indexPath, long id);
 
         public abstract boolean onSectionLongClick(AdapterView<?> adapterView, View view, int section, long id);
 
@@ -263,8 +263,9 @@ public class PinnedHeaderListView extends ListView implements OnScrollListener {
 
     //根据section  row 获取原始listview position
     public void setSelection(int section, int row) {
-        setSelectionIndexPath(new IndexPath(section, row,-1));
+        setSelectionIndexPath(new IndexPath(section, row, -1));
     }
+
     //根据IndexPath获取原始listview position
     public void setSelectionIndexPath(IndexPath indexPath) {
         SectionedBaseAdapter adapter = (SectionedBaseAdapter) mAdapter;
@@ -276,18 +277,20 @@ public class PinnedHeaderListView extends ListView implements OnScrollListener {
     public List<IndexPath> getCheckedIndexPaths() {
         SparseBooleanArray checkedItemPositions = super.getCheckedItemPositions();
 
-        List<IndexPath>  list = new ArrayList<>();
+        List<IndexPath> list = new ArrayList<>();
 
-        for (int i=0;i<checkedItemPositions.size();i++){
+        for (int i = 0; i < checkedItemPositions.size(); i++) {
             int rawPosition = checkedItemPositions.keyAt(i);
+            rawPosition = rawPosition - getHeaderViewsCount();
+
             boolean value = checkedItemPositions.valueAt(i);
-            if (value) {
+            if (value && !mAdapter.isSectionHeader(rawPosition)) {
                 IndexPath indexPath = mAdapter.getIndexPathFowRawPosition(rawPosition);
-                if(indexPath !=null && indexPath.row>=0 && indexPath.section>=0){
+                if (indexPath != null && indexPath.row >= 0 && indexPath.section >= 0) {
                     list.add(indexPath);
                 }
             }
         }
-        return list ;
+        return list;
     }
 }

@@ -2,7 +2,6 @@ package org.skyfox.example.pinnedheaderlistview;
 
 import android.app.AlertDialog;
 import android.content.DialogInterface;
-import android.content.Intent;
 import android.os.Bundle;
 
 import org.skyfox.pinnedheaderlistview.IndexPath;
@@ -39,13 +38,15 @@ public class MainActivity extends Activity {
     TestSectionedAdapter sectionedAdapter;
     PinnedHeaderListView listView;
     private List<Contact> list = new ArrayList<>();
-
+    private Button mutibutton;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
         listView = (PinnedHeaderListView) findViewById(R.id.pinnedListView);
+        mutibutton = (Button) findViewById(R.id.mutibutton);
+
         LayoutInflater inflator = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         LinearLayout header1 = (LinearLayout) inflator.inflate(R.layout.list_item, null);
         ((TextView) header1.findViewById(R.id.textItem)).setText("HEADER 1");
@@ -53,9 +54,9 @@ public class MainActivity extends Activity {
         ((TextView) header2.findViewById(R.id.textItem)).setText("HEADER 2");
         LinearLayout footer = (LinearLayout) inflator.inflate(R.layout.list_item, null);
         ((TextView) footer.findViewById(R.id.textItem)).setText("FOOTER");
-//        listView.addHeaderView(header1);
-//        listView.addHeaderView(header2);
-//        listView.addFooterView(footer);
+        listView.addHeaderView(header1);
+        listView.addHeaderView(header2);
+        listView.addFooterView(footer);
         sectionedAdapter = new TestSectionedAdapter(this, null);
         listView.setAdapter(sectionedAdapter);
 
@@ -158,6 +159,39 @@ public class MainActivity extends Activity {
                 }
             }
         });
+
+        //多选示例
+
+        mutibutton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+                if(mutibutton.getText().equals("获取选中IndePath")){
+                    List<IndexPath> checkedItemIndexPaths = listView.getCheckedIndexPaths();
+                    ArrayList<Contact> result = new ArrayList<Contact>();
+
+                    for (int i=0;i<checkedItemIndexPaths.size();i++){
+                        IndexPath indexPath = checkedItemIndexPaths.get(i);
+
+                        Object[] keys = sectionedAdapter.linkedHashMap.keySet().toArray();
+                        String key = (String) keys[indexPath.section];
+                        ArrayList arrayList = (ArrayList) sectionedAdapter.linkedHashMap.get(key);
+                        Contact contact = (Contact) arrayList.get(indexPath.row);
+                        result.add(contact);
+                    }
+                    new AlertDialog.Builder(MainActivity.this)
+                            .setTitle("提示")
+                            .setMessage(result.toString())
+                            .setPositiveButton("确定", null)
+                            .show();
+                }
+                if(mutibutton.getText().equals("多选")){
+                    listView.setChoiceMode(listView.CHOICE_MODE_MULTIPLE);
+                    mutibutton.setText("获取选中IndePath");
+                }
+            }
+        });
+
         Button button = (Button) findViewById(R.id.button);
         button.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -166,9 +200,13 @@ public class MainActivity extends Activity {
             }
         });
         reloadData();
+
     }
 
     private void reloadData() {
+        mutibutton.setText("多选");
+        listView.setChoiceMode(listView.CHOICE_MODE_NONE);
+
         List list = new ArrayList();
 
         //排序
@@ -192,7 +230,6 @@ public class MainActivity extends Activity {
 
         sectionedAdapter.setDataSource(list);
         sectionedAdapter.notifyDataSetChanged();
-//        listView.invalidate();
     }
 
     @Override
